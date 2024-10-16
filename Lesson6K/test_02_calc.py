@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 
 URL_2 = "https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html"
 
@@ -14,21 +13,19 @@ def test_calculator_form():
     chrome_browser = webdriver.Chrome(service=service)
 
     chrome_browser.get(URL_2)
-    time.sleep(2)  # Ждем, пока страница загрузится
 
-    delay_input = chrome_browser.find_element(By.ID, "delay")
+    # Ожидание и ввод значения в поле delay
+    delay_input = WebDriverWait(chrome_browser, 10).until(
+        EC.presence_of_element_located((By.ID, "delay"))
+    )
     delay_input.clear()
     delay_input.send_keys(45)
-    time.sleep(1)  # Ждем ввода
 
+    # Ожидание и нажатие на кнопки
     chrome_browser.find_element(By.XPATH, "//span[text()='7']").click()
-    time.sleep(1)  # Ждем нажатия
     chrome_browser.find_element(By.XPATH, "//span[text()='+']").click()
-    time.sleep(1)
     chrome_browser.find_element(By.XPATH, "//span[text()='8']").click()
-    time.sleep(1)
     chrome_browser.find_element(By.XPATH, "//span[text()='=']").click()
-    time.sleep(1)
 
     # Ожидание результата и проверка его
     WebDriverWait(chrome_browser, 46).until(
@@ -39,10 +36,5 @@ def test_calculator_form():
     assert result_text == "15", f"Expected result to be '15', \
         but got '{result_text}'"
 
-    print("Тест успешно выполнен!")
-
+    # Закрытие браузера
     chrome_browser.quit()
-
-
-# Запускаем тест
-test_calculator_form()

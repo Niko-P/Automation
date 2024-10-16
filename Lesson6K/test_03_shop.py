@@ -2,7 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
-# import time
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 # URL для теста
 URL_3 = "https://www.saucedemo.com/"
@@ -39,20 +40,16 @@ def test_shop_form():
     chrome_browser.find_element(By.ID, "first-name").send_keys("Nikolai")
     chrome_browser.find_element(By.ID, "last-name").send_keys("Poliakov")
     chrome_browser.find_element(By.ID, "postal-code").send_keys("644033")
-    # time.sleep(15)
     chrome_browser.find_element(By.ID, "continue").click()
 
     # Проверка итоговой суммы
-    total_price = chrome_browser.find_element(
-        By.CLASS_NAME, "summary_total_label").text.strip().replace(
-            "Total: $", "")
+    total_price = WebDriverWait(chrome_browser, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "summary_total_label"))
+    ).text.strip().replace("Total: $", "")
+
     expected_total = "58.29"
     assert total_price == expected_total
     print(f"Итоговая сумма равна ${total_price}")
 
     # Закрытие браузера
     chrome_browser.quit()
-
-
-# Запуск теста
-test_shop_form()
