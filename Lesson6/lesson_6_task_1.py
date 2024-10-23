@@ -12,8 +12,7 @@ wait = WebDriverWait(driver, 40, 0.1)
 driver.get('http://uitestingplayground.com/ajax')
 
 # Клик по синей кнопке
-blue_button = driver.find_element(By.CSS_SELECTOR, '#ajaxButton')
-blue_button.click()
+driver.find_element(By.CSS_SELECTOR, '#ajaxButton').click()
 
 # Ожидание появления текста на зеленке
 content = wait.until(
