@@ -15,7 +15,7 @@ def yougile_instance():
 @pytest.mark.positive_test
 def test_add_project(yougile_instance):
     project_data = {"a3913c0a-809c-4c4f-a9ec-99022f6e6c80": "admin"}
-    response = yougile_instance.create_project("Yogatime", project_data)
+    response = yougile_instance.create_project("My Test", project_data)
 
     assert "content" in response, "Expected 'content' in creation response"
     assert len(response["content"]) > 0, (
