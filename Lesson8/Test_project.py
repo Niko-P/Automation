@@ -5,9 +5,9 @@ from .YouGile import Yougile
 @pytest.fixture
 def yougile_instance():
     return Yougile(
-        "yitak23563@mcatag.com",
-        "ZZSa56NGf8a2K@-",
-        "e9328c9a-5098-45e9-9c7e-bf04a6e29679",
+        "ЛОГИН",
+        "ПАРОЛЬ",
+        "КЛЮЧ",
     )
 
 
