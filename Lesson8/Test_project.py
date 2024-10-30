@@ -1,21 +1,27 @@
 import pytest
 from .YouGile import Yougile
+from dotenv import load_dotenv
+import os
 
+# Загрузка переменных окружения из .env
+load_dotenv()
+
+# Глобальная константа для данных пользователей
+PROJECT_DATA = {"8d72bf5e-e78c-4513-a4af-53757993ab02": "admin"}
 
 @pytest.fixture
 def yougile_instance():
     return Yougile(
-        "ЛОГИН",
-        "ПАРОЛЬ",
-        "КЛЮЧ",
+        os.getenv("YOU_GILE_LOGIN"),
+        os.getenv("YOU_GILE_PASSWORD"),
+        os.getenv("YOU_GILE_COMPANY_ID")
     )
 
 
 # Тест на успешное добавление проекта
 @pytest.mark.positive_test
 def test_add_project(yougile_instance):
-    project_data = {"a3913c0a-809c-4c4f-a9ec-99022f6e6c80": "admin"}
-    response = yougile_instance.create_project("My Test", project_data)
+    response = yougile_instance.create_project("My Test", PROJECT_DATA)
 
     assert "content" in response, "Expected 'content' in creation response"
     assert len(response["content"]) > 0, (
@@ -37,9 +43,8 @@ def test_get_list_of_projects(yougile_instance):
 @pytest.mark.positive_test
 def test_update_project(yougile_instance):
     project_name = "Test Project"
-    project_data = {"a3913c0a-809c-4c4f-a9ec-99022f6e6c80": "admin"}
     create_response = yougile_instance.create_project(
-        project_name, project_data
+        project_name, PROJECT_DATA
     )
 
     assert "content" in create_response, (
@@ -65,9 +70,8 @@ def test_update_project(yougile_instance):
 @pytest.mark.positive_test
 def test_get_project_by_id(yougile_instance):
     project_name = "Test Project"
-    project_data = {"a3913c0a-809c-4c4f-a9ec-99022f6e6c80": "admin"}
     create_response = yougile_instance.create_project(
-        project_name, project_data
+        project_name, PROJECT_DATA
     )
 
     assert "content" in create_response, (
@@ -99,10 +103,8 @@ def test_get_project_by_id(yougile_instance):
      reason="Expected ValueError when project name is missing."
      )
 def test_add_project_missing_name(yougile_instance):
-    invalid_project_data = {"a3913c0a-809c-4c4f-a9ec-99022f6e6c80": "admin"}
-
     with pytest.raises(ValueError, match="Project name is required."):
-        yougile_instance.create_project("", invalid_project_data)
+        yougile_instance.create_project("", PROJECT_DATA)
 
 
 # Тест на добавление проекта без данных пользователей
