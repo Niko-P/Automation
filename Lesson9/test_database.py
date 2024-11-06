@@ -7,9 +7,12 @@ from database import (
     update_student,
     delete_teacher,
     engine,
-    subject_table,
     student_table,
     teacher_table,
+    get_subject,
+    delete_subject,
+    get_student,
+    get_teacher
 )
 
 
@@ -43,24 +46,18 @@ def setup_database():
 # Тест на добавление нового предмета
 def test_add_subject(session):
     add_subject(session, 16, 'Art')
-
-    result = session.query(subject_table).filter_by(subject_id=16).first()
+    result = get_subject(session, 16)
     assert result.subject_title == 'Art'
 
-    # Удаление добавленного предмета
-    delete_stmt = subject_table.delete().where(
-        subject_table.c.subject_id == 16
-    )
-    session.execute(delete_stmt)
-    session.commit()
+    delete_subject(session, 16)
+    result = get_subject(session, 16)
+    assert result is None
 
 
 # Тест на обновление студента
 def test_update_student(session):
     existing_user_id = 11548
-    if session.query(student_table).filter_by(
-        user_id=existing_user_id
-    ).first() is None:
+    if get_student(session, existing_user_id) is None:
         session.execute(student_table.insert().values(
             user_id=existing_user_id,
             level='Intermediate',
@@ -70,10 +67,7 @@ def test_update_student(session):
         session.commit()
 
     update_student(session, existing_user_id, 'Advanced')
-
-    result = session.query(student_table).filter_by(
-        user_id=existing_user_id
-    ).first()
+    result = get_student(session, existing_user_id)
     assert result.level == 'Advanced'
 
     # Возврат к предыдущему состоянию
@@ -83,9 +77,7 @@ def test_update_student(session):
 # Тест на удаление учителя
 def test_delete_teacher(session):
     teacher_id = 29971
-    if session.query(teacher_table).filter_by(
-        teacher_id=teacher_id
-    ).first() is None:
+    if not get_teacher(session, teacher_id):
         session.execute(teacher_table.insert().values(
             teacher_id=teacher_id,
             email='teacher@example.com',
@@ -94,8 +86,5 @@ def test_delete_teacher(session):
         session.commit()
 
     delete_teacher(session, teacher_id)
-
-    result = session.query(teacher_table).filter_by(
-        teacher_id=teacher_id
-    ).all()
+    result = get_teacher(session, teacher_id)
     assert len(result) == 0
